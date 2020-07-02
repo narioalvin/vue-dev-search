@@ -1,4 +1,7 @@
-# vue-dev-search
+# Dev Search
+
+## Live
+[Click Me](https://narioalvin.github.io/vue-dev-search/)
 
 ## Project setup
 ```
