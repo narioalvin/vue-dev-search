@@ -17,6 +17,7 @@ import {
   BCardText,
   VBToggle
 } from 'bootstrap-vue';
+import store from './store';
 
 library.add(fas);
 
@@ -37,5 +38,6 @@ Vue.directive('b-toggle', VBToggle);
 Vue.config.productionTip = false
 
 new Vue({
+  store,
   render: h => h(App),
 }).$mount('#app')

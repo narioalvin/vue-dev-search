@@ -1,7 +1,7 @@
 {
   "name": "vue-dev-search",
   "author": "Alvin Nario <narioalvin94@gmail.com>",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -21,7 +21,7 @@
     "gh-pages": "^3.1.0",
     "moment": "^2.27.0",
     "vue": "^2.6.11",
-    "vue-content-loader": "^0.2.3"
+    "vuex": "^3.5.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.4.0",
