@@ -1,21 +1,43 @@
 <template>
-  <b-navbar class="d-padding" id="navbar" toggleable="lg" type="dark">
-    <b-navbar-brand href="#" @click="reload">Dev Search</b-navbar-brand>
+  <div class="main-nav">
+    <div class="nav-body">
+      <b-navbar class="d-padding" id="navbar" toggleable="lg" type="dark">
+        <div class="nav-title-section">
+          <img
+            class="mr-2"
+            src="../../assets/img/job-seeker.svg"
+            width="40"
+            alt=""
+          />
+          <div class="nav-text">
+            <h3 @click="reload">
+              DEV SEARCH
+            </h3>
+            <span>Find your next dream job here!</span>
+          </div>
+        </div>
 
-    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+        <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
-    <b-collapse id="nav-collapse" is-nav>
-      <!-- Right aligned nav items -->
-      <b-navbar-nav class="ml-auto">
-        <b-nav-item @click="reload">All Jobs</b-nav-item>
-      </b-navbar-nav>
-    </b-collapse>
-  </b-navbar>
+        <b-collapse id="nav-collapse" is-nav>
+          <!-- Right aligned nav items -->
+          <b-navbar-nav class="ml-auto">
+            <b-nav-item @click="reload">SHOW ALL JOBS</b-nav-item>
+          </b-navbar-nav>
+        </b-collapse>
+      </b-navbar>
+
+      <SearchBar />
+    </div>
+  </div>
 </template>
 
 <script>
+import SearchBar from '@/components/searchbar/SearchBar';
+
 export default {
   name: 'Navbar',
+  components: { SearchBar },
   methods: {
     reload() {
       location.reload();
@@ -25,12 +47,42 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.navbar {
-  background: #5d4da8;
+.main-nav {
+  position: fixed;
+  z-index: 9;
+  padding: 0 15px;
+  width: 100%;
 
-  .navbar-brand,
-  .nav-link {
-    color: #ffffff;
+  .nav-body {
+    max-width: 1440px;
+    margin: 0 auto;
+    background: #502f7e;
+    border-bottom-right-radius: 1.5rem;
+    border-bottom-left-radius: 1.5rem;
+
+    .nav-title-section {
+      display: flex;
+
+      .nav-text {
+        h3 {
+          color: #ffffff;
+          font-weight: bold;
+          margin: 0;
+        }
+
+        span {
+          color: #ffffff;
+          font-size: 14px;
+        }
+      }
+    }
+
+    .navbar {
+      .navbar-brand,
+      .nav-link {
+        color: #ffffff;
+      }
+    }
   }
 }
 </style>

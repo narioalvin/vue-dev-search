@@ -16,13 +16,12 @@
         placeholder="Filter by city, state, zip code or country"
       ></b-form-input>
     </div>
-    <b-button pill variant="primary" @click="$emit('search', query)">
-      Search</b-button
-    >
+    <button class="pr-button" @click="clickSearch">Search</button>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 
 export default {
   name: 'SearchBar',
@@ -34,14 +33,20 @@ export default {
       },
     };
   },
-  methods: {},
+  methods: {
+    ...mapActions(['search']),
+    clickSearch() {
+      // const { description, location } = this.query;
+      console.log(this.query)
+      this.search(this.query);
+    },
+  },
 };
 </script>
 
 <style lang="scss">
 .search {
   height: auto;
-  background: #f2f2f2;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -53,21 +58,30 @@ export default {
     margin-bottom: 10px;
 
     .form-control {
-      font-size: 12px;
-      padding-left: 28px;
+      font-size: 16px;
+      padding-left: 35px;
+      height: 45px;
+      border-radius: 10px;
+      border: 0;
     }
 
     .case {
       position: absolute;
-      top: 10px;
-      left: 8px;
+      top: 15px;
+      left: 12px;
       color: #999999;
-      font-size: 14px;
+      font-size: 15px;
     }
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 769px) {
+  .search button {
+    margin-top: 0;
+  }
+}
+
+@media (min-width: 1024px) {
   .search {
     flex-direction: row;
 

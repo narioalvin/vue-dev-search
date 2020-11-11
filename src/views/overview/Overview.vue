@@ -1,15 +1,7 @@
 <template>
   <div class="overview">
-    <SearchBar @search="search" />
-    <div class="content-loaders d-padding" v-if="showLoader">
-      <ContentLoaders />
-      <ContentLoaders />
-      <ContentLoaders />
-      <ContentLoaders />
-      <ContentLoaders />
-      <ContentLoaders />
-      <ContentLoaders />
-      <ContentLoaders />
+    <div class="content-loaders d-padding" v-if="loading">
+      <div class="loader"></div>
     </div>
     <div class="overview-content d-padding" v-else>
       <div
@@ -18,27 +10,45 @@
         :key="index"
         v-b-toggle="item.id"
       >
-        <div class="list-content">
-          <div class="img-section">
-            <img
-              v-if="item.company_logo !== null"
-              :src="item.company_logo"
-              alt=""
-            />
+        <div class="accordion">
+          <div class="list-content">
+            <div class="img-section">
+              <img
+                v-if="item.company_logo !== null"
+                :src="item.company_logo"
+                alt=""
+              />
 
-            <font-awesome-icon
-              v-else
-              class="case"
-              :icon="['fas', 'briefcase']"
-            />
+              <font-awesome-icon
+                v-else
+                class="case"
+                :icon="['fas', 'briefcase']"
+              />
+            </div>
+            <div class="info-section">
+              <h5 class="title">{{ item.title }}</h5>
+              <p class="type-title">
+                {{ item.company }} - <span class="type">{{ item.type }}</span>
+              </p>
+              <p class="sm-text">
+                <span>
+                  <div>
+                    <font-awesome-icon :icon="['fas', 'map-marker-alt']" />
+                  </div>
+                </span>
+                {{ item.location }}
+              </p>
+              <p class="sm-text">
+                <span>
+                  <div>
+                    <font-awesome-icon :icon="['fas', 'clock']" /></div></span
+                >{{ item.$$date }}
+              </p>
+            </div>
           </div>
-          <div class="info-section">
-            <h5 class="title">{{ item.title }}</h5>
-            <p class="type-title">
-              {{ item.company }} - <span class="type">{{ item.type }}</span>
-            </p>
-            <p class="sm-text">{{ item.location }}</p>
-            <p class="sm-text">{{ item.$$date }}</p>
+
+          <div class="arrow">
+            <font-awesome-icon :class="{'test' : item.$$open}" :icon="['fas', 'angle-down']" />
           </div>
         </div>
 
@@ -54,30 +64,27 @@
       </div>
     </div>
 
-    <div class="no-result" v-if="jobs.length < 1 && !showLoader">
+    <div class="no-result" v-if="jobs.length < 1 && !loading">
       <img src="../../assets/img/search.svg" alt="" />
       <h4>No results found</h4>
     </div>
-    <div class="btn-load" v-if="!showLoader && jobs.length > 49">
-      <b-button pill variant="primary" @click="loadMore()"> Load More</b-button>
+    <div
+      class="btn-load"
+      v-if="!loading && jobs.length > 49 && showLoadMoreBtn"
+    >
+      <button class="pr-button" @click="loadMore()">Load more</button>
     </div>
   </div>
 </template>
 
 <script>
-const axios = require('axios');
-import moment from 'moment';
-import SearchBar from '@/components/searchbar/SearchBar';
-import ContentLoaders from '@/components/content-loader/ContentLoader';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'Overview',
-  components: { SearchBar, ContentLoaders },
+  computed: mapGetters(['jobs', 'loading', 'showLoadMoreBtn']),
   data() {
     return {
-      jobs: [],
-      showLoader: true,
-      page: 1,
       isSearch: false,
       query: null,
     };
@@ -87,50 +94,15 @@ export default {
   },
   mounted() {},
   methods: {
+    ...mapActions(['getAll', 'getMore', 'activeState']),
     getJobs() {
-      this.showLoader = true;
-      axios
-        .get(
-          `https://cors-anywhere.herokuapp.com/https://jobs.github.com/positions.json?page=${this.page}`
-        )
-        .then((response) => {
-          const jobs = response.data.map((job) => {
-            job['$$date'] = moment(new Date(job.created_at)).fromNow();
-            return job;
-          });
-          this.jobs = jobs;
-          this.showLoader = false;
-          console.log(this.jobs);
-        })
-        .catch(() => {
-          this.showLoader = false;
-        });
-    },
-    search(query) {
-      this.showLoader = true;
-      const { description, location } = query || this.query;
-      this.isSearch = true;
-      this.query = query;
-      axios
-        .get(
-          `https://cors-anywhere.herokuapp.com/https://jobs.github.com/positions.json?&description=${description}&location=${location}&page=${this.page}`
-        )
-        .then((response) => {
-          const jobs = response.data.map((job) => {
-            job['$$date'] = moment(new Date(job.created_at)).fromNow();
-            return job;
-          });
-          this.jobs = jobs;
-          this.showLoader = false;
-        })
-        .catch(() => {
-          this.showLoader = false;
-        });
+      this.getAll();
     },
     loadMore() {
-      this.showLoader = true;
-      this.page += 1;
-      this.isSearch ? this.search(this.query) : this.getJobs();
+      this.getMore();
+    },
+    itemClick(index) {
+      this.activeState(index);
     },
   },
 };
@@ -138,33 +110,56 @@ export default {
 
 <style lang="scss" scoped>
 .overview {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
+  .content-loaders {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
   .overview-content {
-    padding: 5px;
+    padding: 5px 15px;
+    padding-top: 290px;
 
     .card {
-      -webkit-box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.21);
-      -moz-box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.21);
-      box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.21);
+      box-shadow: 0px 3px 10px 0 rgba(13, 51, 32, 0.2);
       height: 120px;
-      margin-bottom: 10px;
       width: 100%;
       display: flex;
       flex-direction: column;
       height: auto;
+      max-width: 1440px;
+      margin: 0 auto;
+      margin-bottom: 15px;
+      border: 0;
+
+      .accordion {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-right: 20px;
+
+        .arrow svg {
+          font-size: 24px;
+          color: #ff9066;
+        }
+      }
 
       &:hover {
         background: #f2f2f2;
+        transition: 0.3s;
+      }
+
+      &:active,
+      &:focus {
+        outline: 0;
       }
 
       .list-content {
         display: flex;
 
         .img-section {
-          width: 150px;
+          min-width: 150px;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -193,8 +188,7 @@ export default {
 
           h5 {
             margin-bottom: 4px;
-            font-weight: 600;
-            color: #5d4da8;
+            font-weight: bold;
             font-size: 13px;
           }
 
@@ -206,6 +200,17 @@ export default {
           .sm-text {
             color: #a6a6a6;
             font-size: 11px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 2px;
+
+            span {
+              display: inline-block;
+
+              div {
+                width: 20px;
+              }
+            }
           }
         }
       }
@@ -239,35 +244,41 @@ export default {
   }
 }
 
-@media (min-width: 768px) {
-  .overview {
-    .overview-content {
-      padding: 15px 120px;
+@media (min-width: 769px) {
+  .overview .overview-content .card {
+    .list-content {
+      .img-section {
+        img {
+          max-width: 90px;
+        }
+      }
 
-      .card {
-        .list-content {
-          .img-section {
-            img {
-              max-width: 90px;
-            }
-          }
+      .info-section {
+        .type-title {
+          font-size: 16px;
+        }
 
-          .info-section {
-            .type-title {
-              font-size: 16px;
-            }
+        h5 {
+          font-size: 17px;
+        }
 
-            h5 {
-              font-size: 18px;
-            }
-
-            .sm-text {
-              font-size: 14px;
-            }
-          }
+        .sm-text {
+          font-size: 14px;
         }
       }
     }
+  }
+}
+
+@media (min-width: 1024px) {
+  .overview .overview-content {
+    padding-top: 175px;
+  }
+}
+
+@media (max-width: 640px) {
+  .overview {
+    overflow: scroll;
   }
 }
 </style>
