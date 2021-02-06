@@ -2,7 +2,7 @@ import axios from 'axios';
 import moment from 'moment';
 
 const url =
-  'https://cors-anywhere.herokuapp.com/https://jobs.github.com/positions.json';
+  'https://my-personal-portfolio-api.herokuapp.com/api/project/githubjobs';
 
 const state = {
   jobs: [],
@@ -25,8 +25,7 @@ const actions = {
       axios
         .get(url)
         .then((response) => {
-          const jobs = initJobs(response.data)
-          // console.log(jobs)
+          const jobs = initJobs(response.data);
           commit('setJobs', jobs);
           state.loading = false;
           resolve(response);
@@ -37,11 +36,10 @@ const actions = {
   getMore({ commit }) {
     return new Promise((resolve, reject) => {
       ++state.page;
-      console.log(state.page);
       axios
         .get(`${url}?page=${state.page}`)
         .then((response) => {
-          const jobs = initJobs(response.data)
+          const jobs = initJobs(response.data);
           if (jobs.length < 50) {
             state.showLoadMoreBtn = false;
           }
@@ -59,7 +57,7 @@ const actions = {
           `${url}?description=${query.description}&location=${query.location}`
         )
         .then((response) => {
-          const jobs = initJobs(response.data)
+          const jobs = initJobs(response.data);
           commit('setJobs', jobs);
           state.loading = false;
           resolve(response);
@@ -67,13 +65,15 @@ const actions = {
         .catch(() => reject((state.loading = false)));
     });
   },
-  // activeState (_, index) {
-  //   state.jobs.forEach((job, i) => {
-  //     job.$$open = i === index ? !job.$$open : false;
-  //     return job;
-  //   })
-  // console.log(state.jobs)
-  // }
+  activeState(_, index) {
+    state.jobs.forEach((job, i) => {
+      if (index === i) {
+        setTimeout(() => {
+          job.$$open = !job.$$open;
+        }, 10);
+      }
+    });
+  },
 };
 
 const mutations = {
@@ -81,8 +81,7 @@ const mutations = {
   mergeJobs: (state, newJobs) => (state.jobs = state.jobs.concat(newJobs)),
 };
 
-
-const initJobs = jobs => {
+const initJobs = (jobs) => {
   return jobs.map((job) => {
     job['$$date'] = moment(new Date(job.created_at)).fromNow();
     job['$$open'] = false;

@@ -9,6 +9,7 @@
         v-for="(item, index) in jobs"
         :key="index"
         v-b-toggle="item.id"
+        @click="itemClick(index)"
       >
         <div class="accordion">
           <div class="list-content">
@@ -48,7 +49,10 @@
           </div>
 
           <div class="arrow">
-            <font-awesome-icon :class="{'test' : item.$$open}" :icon="['fas', 'angle-down']" />
+            <font-awesome-icon
+              :class="{ 'active-arrow': item.$$open }"
+              :icon="['fas', 'angle-down']"
+            />
           </div>
         </div>
 
@@ -72,7 +76,14 @@
       class="btn-load"
       v-if="!loading && jobs.length > 49 && showLoadMoreBtn"
     >
-      <button class="pr-button" @click="loadMore()">Load more</button>
+      <button class="pr-button" @click="loadMore()">
+        Load more
+        <b-spinner
+          variant="light"
+          v-if="loadingMore"
+          class="load-more-spinner"
+        ></b-spinner>
+      </button>
     </div>
   </div>
 </template>
@@ -87,6 +98,7 @@ export default {
     return {
       isSearch: false,
       query: null,
+      loadingMore: false,
     };
   },
   created() {
@@ -99,7 +111,10 @@ export default {
       this.getAll();
     },
     loadMore() {
-      this.getMore();
+      this.loadingMore = true;
+      this.getMore().then(() => {
+        this.loadingMore = false;
+      });
     },
     itemClick(index) {
       this.activeState(index);
@@ -142,6 +157,12 @@ export default {
         .arrow svg {
           font-size: 24px;
           color: #ff9066;
+          transition: all 0.4s ease-out;
+        }
+
+        .active-arrow {
+          transform: rotate(180deg);
+          transition: all 0.4s ease-out;
         }
       }
 
@@ -241,31 +262,47 @@ export default {
   .btn-load {
     padding: 0 5px 15px 5px;
     text-align: center;
+
+    button {
+      width: 100%;
+
+      .load-more-spinner {
+        height: 20px;
+        width: 20px;
+        margin-left: 10px;
+      }
+    }
   }
 }
 
 @media (min-width: 769px) {
-  .overview .overview-content .card {
-    .list-content {
-      .img-section {
-        img {
-          max-width: 90px;
+  .overview {
+    .overview-content .card {
+      .list-content {
+        .img-section {
+          img {
+            max-width: 90px;
+          }
+        }
+
+        .info-section {
+          .type-title {
+            font-size: 16px;
+          }
+
+          h5 {
+            font-size: 17px;
+          }
+
+          .sm-text {
+            font-size: 14px;
+          }
         }
       }
+    }
 
-      .info-section {
-        .type-title {
-          font-size: 16px;
-        }
-
-        h5 {
-          font-size: 17px;
-        }
-
-        .sm-text {
-          font-size: 14px;
-        }
-      }
+    .btn-load button {
+      width: 250px;
     }
   }
 }
