@@ -134,7 +134,7 @@ export default {
 
   .overview-content {
     padding: 5px 15px;
-    padding-top: 290px;
+    padding-top: 330px;
 
     .card {
       box-shadow: 0px 3px 10px 0 rgba(13, 51, 32, 0.2);
@@ -196,7 +196,7 @@ export default {
 
         .info-section {
           width: 100%;
-          height: 120px;
+          min-height: 120px;
           padding: 10px;
 
           .type {
@@ -309,7 +309,7 @@ export default {
 
 @media (min-width: 1024px) {
   .overview .overview-content {
-    padding-top: 175px;
+    padding-top: 220px;
   }
 }
 

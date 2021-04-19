@@ -59,9 +59,10 @@ export default {
     background: #502f7e;
     border-bottom-right-radius: 1.5rem;
     border-bottom-left-radius: 1.5rem;
+    // max-height: 300px;
 
     .nav-title-section {
-      display: flex;
+      // display: flex;
 
       .nav-text {
         h3 {
